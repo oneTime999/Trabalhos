@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalho de Português - Ilhabela</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 103, 86, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 182, 193, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            z-index: -2;
+        }
+        
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: -1;
+        }
+        
+        .slide-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6756 0%, #7877c6 50%, #ffb6c1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            font-weight: 400;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .music-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 24px 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .info-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .lyric-section {
+            background: linear-gradient(135deg, 
+                rgba(120, 119, 198, 0.2) 0%, 
+                rgba(255, 103, 86, 0.2) 50%, 
+                rgba(255, 182, 193, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+        
+        .lyric-section::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 30px;
+            font-size: 6rem;
+            color: rgba(255, 255, 255, 0.1);
+            font-family: Georgia, serif;
+        }
+        
+        .lyric-section::after {
+            content: '"';
+            position: absolute;
+            bottom: -20px;
+            right: 30px;
+            font-size: 6rem;
+            color: rgba(255, 255, 255, 0.1);
+            font-family: Georgia, serif;
+        }
+        
+        .lyric-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            font-style: italic;
+            color: #fff;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .figures-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .figure-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #ff6756;
+            transition: all 0.3s ease;
+        }
+        
+        .figure-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(8px);
+        }
+        
+        .figure-type {
+            font-weight: 700;
+            color: #ff6756;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .figure-description {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .content-text {
+            color: #ddd;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, rgba(255, 103, 86, 0.3), rgba(120, 119, 198, 0.3));
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .additional-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 50px;
+        }
+        
+        .additional-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .additional-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .additional-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+        }
+        
+        .additional-item h4 {
+            color: #7877c6;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 103, 86, 0.1), rgba(120, 119, 198, 0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-circle:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-circle:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .floating-circle:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .credits-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 50px;
+            margin-top: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .credits-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 103, 86, 0.05) 0%, 
+                rgba(120, 119, 198, 0.05) 50%, 
+                rgba(255, 182, 193, 0.05) 100%);
+            z-index: -1;
+        }
+        
+        .credits-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .credits-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .students-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .student-name {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 20px 30px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .student-name::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .student-name:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .student-name:hover::before {
+            left: 100%;
+        }
+        
+        .teacher-info {
+            font-size: 1.1rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .teacher-name {
+            background: linear-gradient(135deg, #7877c6 0%, #ff6756 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 20px 15px;
+            }
+            
+            .main-grid,
+            .analysis-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .card {
+                padding: 30px;
+            }
+            
+            .lyric-section {
+                padding: 40px 30px;
+            }
+            
+            .lyric-text {
+                font-size: 1.1rem;
+            }
+            
+            .additional-section {
+                padding: 30px 20px;
+            }
+            
+            .credits-section {
+                padding: 30px 20px;
+            }
+            
+            .students-grid {
+                gap: 20px;
+            }
+            
+            .student-name {
+                padding: 15px 20px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-gradient"></div>
+    <div class="noise"></div>
+    
+    <div class="slide-container">
+        <div class="floating-elements">
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+        </div>
+        
+        <div class="header">
+            <h1>Trabalho de Português</h1>
+            <p class="subtitle">Análise Literária e Musical</p>
+        </div>
+        
+        <div class="music-info-grid">
+            <div class="info-item">
+                <div class="info-label">Música</div>
+                <div class="info-value">Ilhabela</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Artista</div>
+                <div class="info-value">MC Magal</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ano</div>
+                <div class="info-value">2019</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Gênero</div>
+                <div class="info-value">Funk Paulista</div>
+            </div>
+        </div>
+        
+        <div class="lyric-section">
+            <div class="lyric-text">
+                E eu e ela em Ilhabela<br>
+                Dando uns trago numa vela<br>
+                Com vista de frente ao mar<br>
+                O limão é tão azedo que ninguém pode chupar<br>
+                Sua boca é tão doce que só eu posso beijar
+            </div>
+        </div>
+        
+        <div class="analysis-grid">
+            <div class="card">
+                <h3 class="card-title">Uso de Conotações</h3>
+                <p class="content-text">
+                    A letra emprega palavras em sentido figurado para criar imagens poéticas. A <span class="highlight">"vela"</span> representa o momento de relaxamento e curtição, enquanto a <span class="highlight">"vista de frente ao mar"</span> evoca sensações de paz, liberdade e romantismo, criando um cenário idílico para o encontro amoroso.
+                </p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Figuras de Linguagem</h3>
+                <div class="figures-grid">
+                    <div class="figure-item">
+                        <div class="figure-type">Metáfora</div>
+                        <div class="figure-description">"Sua boca é tão doce" - comparação implícita do beijo com um sabor agradável, expressando prazer e satisfação.</div>
+                    </div>
+                    <div class="figure-item">
+                        <div class="figure-type">Antítese</div>
+                        <div class="figure-description">Contraste entre o "azedo" do limão (inacessível) e o "doce" da boca (exclusivo), criando oposição semântica.</div>
+                    </div>
+                    <div class="figure-item">
+                        <div class="figure-type">Hipérbole</div>
+                        <div class="figure-description">Exagero poético nas expressões "ninguém pode" e "só eu posso", intensificando a exclusividade do relacionamento.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Contexto Histórico e Social</h3>
+                <p class="content-text">
+                    A música integra o movimento do <span class="highlight">funk paulista</span> contemporâneo, que mescla elementos de ostentação com narrativas românticas. <span class="highlight">Ilhabela</span> representa um espaço de lazer da elite paulista, simbolizando ascensão social e conquista de um estilo de vida privilegiado, comum na temática do funk ostentação.
+                </p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Tipo de Linguagem</h3>
+                <p class="content-text">
+                    A composição utiliza <span class="highlight">linguagem coloquial</span> típica do funk, próxima da oralidade urbana juvenil. Incorpora gírias, expressões informais e construções sintáticas simples, refletindo a estética comunicativa do gênero e sua identificação com o público jovem da periferia.
+                </p>
+            </div>
+        </div>
+        
+        <div class="additional-section">
+            <h2 class="card-title" style="text-align: center; margin-bottom: 20px;">Adicionais</h2>
+            <p class="content-text" style="text-align: center; margin-bottom: 30px;">Informações complementares sobre a música e o artista</p>
+            
+            <div class="additional-grid">
+                <div class="additional-item">
+                    <h4>Sobre MC Magal</h4>
+                    <p class="content-text">
+                        Wesley Nunes Fernandes, mais conhecido como MC Magal, nasceu em Osasco, São Paulo. Aos 16 anos, foi descoberto numa roda de samba com os amigos na quebrada. Representa a nova geração do funk paulista, misturando romantismo com elementos de ostentação.
+                    </p>
+                </div>
+                
+                <div class="additional-item">
+                    <h4>Produção Musical</h4>
+                    <p class="content-text">
+                        A música foi produzida pela GR6, a maior produtora de funk da América Latina, especializada na criação, produção e distribuição de hits no gênero. A produção inclui a participação do DJ Pedro, característico do selo GR6 Explode.
+                    </p>
+                </div>
+                
+                <div class="additional-item">
+                    <h4>Impacto Cultural</h4>
+                    <p class="content-text">
+                        A faixa se destaca no cenário do funk por abordar romance de forma poética, contrastando com o estilo mais agressivo comum no gênero. A música ganhou popularidade nas redes sociais, especialmente no TikTok, onde usuários compartilham a "vibe romântica" da faixa.
+                    </p>
+                </div>
+                
+                <div class="additional-item">
+                    <h4>Contexto Geográfico</h4>
+                    <p class="content-text">
+                        Ilhabela, localizada no litoral de São Paulo, é um destino turístico de elite. A escolha deste cenário na letra reforça a temática de ascensão social presente no funk ostentação, onde o acesso a espaços privilegiados simboliza conquista e status social.
+                    </p>
+                </div>
+                
+                <div class="additional-item">
+                    <h4>Características Técnicas</h4>
+                    <p class="content-text">
+                        A música foi lançada oficialmente em 2019 nas principais plataformas digitais como Spotify, seguindo a batida característica do funk 150 BPM, com influências melódicas que suavizam a agressividade típica do gênero.
+                    </p>
+                </div>
+                
+                <div class="additional-item">
+                    <h4>Relevância no Funk Paulista</h4>
+                    <p class="content-text">
+                        MC Magal integra a cena do funk paulista alongside artistas como MC IG, MC Pedrinho e MC Hariel. Sua participação em sets coletivos demonstra sua inserção na nova geração de MCs que renovam o gênero, trazendo narrativas mais introspectivas e românticas.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="credits-section">
+            <div class="credits-content">
+                <h3 class="credits-title">Trabalho realizado por</h3>
+                <div class="students-grid">
+                    <div class="student-name">Arthur</div>
+                    <div class="student-name">Pedro</div>
+                    <div class="student-name">Ítalo Ryan</div>
+                </div>
+                <div class="teacher-info">
+                    <p>Para a Professora <span class="teacher-name">Silviellen</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Animação de entrada suave
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            const elements = document.querySelectorAll('.card, .info-item, .additional-item, .student-name');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+                observer.observe(el);
+            });
+        });
+        
+        // Efeito de paralaxe suave nos elementos flutuantes
+        document.addEventListener('mousemove', (e) => {
+            const circles = document.querySelectorAll('.floating-circle');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            circles.forEach((circle, index) => {
+                const speed = (index + 1) * 0.5;
+                const xPos = x * speed * 10;
+                const yPos = y * speed * 10;
+                
+                circle.style.transform = `translate(${xPos}px, ${yPos}px)`;
+            });
+        });
+        
+        // Efeito de brilho nos cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', x + 'px');
+                card.style.setProperty('--mouse-y', y + 'px');
+            });
+        });
+    </script>
+</body>
+</html>
